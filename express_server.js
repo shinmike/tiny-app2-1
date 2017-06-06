@@ -1,8 +1,11 @@
+"use strict";
+
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 
 app.set("view engine", "ejs");
+app.use("/assets", express.static("assets")); // to apply CSS
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -14,8 +17,18 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase
+  };
   res.render("urls_index", templateVars);
+});
+
+app.get("/urls/:id", (req, res) => {
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id]
+  };
+  res.render("urls_show", templateVars);
 });
 
 app.get("/urls.json", (req, res) => {
