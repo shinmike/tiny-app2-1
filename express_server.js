@@ -100,7 +100,14 @@ app.get("/u/:shortURL", (req, res) => {
 // -------------------------------- Login (setting cookie)
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
-  console.log("cookie set!");
+  console.log("cookie 'username' set!");
+  res.redirect("/urls");
+});
+
+// -------------------------------- Logout
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  console.log("cookie 'username' cleared!");
   res.redirect("/urls");
 });
 
