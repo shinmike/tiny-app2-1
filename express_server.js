@@ -49,11 +49,17 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]
-  };
-  res.render("urls_show", templateVars);
+  if (req.params.id in urlDatabase) {
+    console.log('Exists!');
+    let templateVars = {
+      shortURL: req.params.id,
+      longURL: urlDatabase[req.params.id]
+    };
+    res.render("urls_show", templateVars);
+  } else {
+    console.log('error');
+    res.end("Please type in valid shortlink");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -64,10 +70,6 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
-// app.get("/hello", (req, res) => {
-//   res.end("<html><body>Hello <b>World</b></body></html>\n");
-// });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
