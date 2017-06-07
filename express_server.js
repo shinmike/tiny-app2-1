@@ -59,21 +59,19 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   if (req.params.id in urlDatabase) {
-    console.log('Exists!');
     let templateVars = {
       shortURL: req.params.id,
       longURL: urlDatabase[req.params.id]
     };
     res.render("urls_show", templateVars);
   } else {
-    console.log('Not a valid shortlink');
-    res.redirect("/urls");
+    res.render("urls_new");
   }
 });
 
 app.post("/urls/:id", (req, res) => {
-  let longURL = req.body.longURL;
-  urlDatabase[req.params.id] = longURL;
+  let longURLUpdated = req.body.longURLUpdated;
+  urlDatabase[req.params.id] = longURLUpdated;
   res.redirect(`/urls/${req.params.id}`)
 });
 
