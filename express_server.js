@@ -95,6 +95,13 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// -------------------------------- Login (setting cookie)
+app.post("/login", (req, res) => {
+  res.cookie("cookie", req.body.username);
+  console.log("cookie set!");
+  res.redirect("/urls");
+});
+
 // -------------------------------- Read JSON of database
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
