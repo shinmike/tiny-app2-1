@@ -45,7 +45,8 @@ app.get("/", (req, res) => {
 // -------------------------------- Read database page
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase
+    urls: urlDatabase,
+    username: req.cookies.username
   };
   res.render("urls_index", templateVars);
 });
@@ -60,7 +61,7 @@ app.post("/urls", (req, res) => {
 
 // -------------------------------- Read new url page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render("urls_new", { username: req.cookies.username });
 });
 
 // -------------------------------- Read specific url page
@@ -68,7 +69,8 @@ app.get("/urls/:id", (req, res) => {
   if (req.params.id in urlDatabase) {
     let templateVars = {
       shortURL: req.params.id,
-      longURL: urlDatabase[req.params.id]
+      longURL: urlDatabase[req.params.id],
+      username: req.cookies.username
     };
     res.render("urls_show", templateVars);
   } else {
@@ -97,7 +99,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 // -------------------------------- Login (setting cookie)
 app.post("/login", (req, res) => {
-  res.cookie("cookie", req.body.username);
+  res.cookie("username", req.body.username);
   console.log("cookie set!");
   res.redirect("/urls");
 });
