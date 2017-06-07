@@ -39,6 +39,7 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
+// -------------------------------- Read database page
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase
@@ -46,6 +47,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// -------------------------------- Create url to database
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;
@@ -53,10 +55,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// -------------------------------- Read new url page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// -------------------------------- Read specific url page
 app.get("/urls/:id", (req, res) => {
   if (req.params.id in urlDatabase) {
     let templateVars = {
@@ -69,24 +73,28 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
+// -------------------------------- Delete specific url page
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
+
+// -------------------------------- Update specific url page
 app.post("/urls/:id", (req, res) => {
   let longURLUpdated = req.body.longURLUpdated;
   urlDatabase[req.params.id] = longURLUpdated;
-  res.redirect(`/urls/${req.params.id}`)
+  res.redirect(`/urls/${req.params.id}`);
 });
 
+// -------------------------------- Read website of specific url page
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
+// -------------------------------- Read JSON of database
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
-
-app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
 });
 
 // -------------------------------------------------- Initialize app
