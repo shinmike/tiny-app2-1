@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <% include ./partials/_head %>
-</head>
-<body>
-  <header>
-    <% include ./partials/_header %>
-  </header>
-  <h2>Full URL and its shortened form:</h2>
-  <ul>
-    <li><strong>full url: </strong><%= longURL %></li>
-    <li><strong>shortened: </strong><%= shortURL %></li>
-  </ul>
-</body>
+  <head>
+    <% include ./partials/_head %>
+  </head>
+  <body>
+    <header>
+      <% include ./partials/_header %>
+    </header>
+    <h2>Full URL and its shortened form:</h2>
+    <ul>
+      <li>
+        <strong>full url: </strong><%= longURL %>
+      </li>
+      <li>
+        <strong>shortened: </strong><%= shortURL %>
+      </li>
+      <li>
+        <a href="/urls">See all urls</a>
+      </li>
+    </ul>
+  </body>
 </html>
