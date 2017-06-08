@@ -39,7 +39,7 @@ function generateRandomString() {
 
 // -------------------------------------------------- Routes
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  res.redirect("/urls");
 });
 
 // -------------------------------- Read database page
@@ -97,11 +97,15 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-// -------------------------------- Login (setting cookie)
+// -------------------------------- Login (set cookie)
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  console.log("cookie 'username' set!");
-  res.redirect("/urls");
+  if (req.body.username !== ""){
+    res.cookie("username", req.body.username);
+    console.log("cookie 'username' set!");
+    res.redirect("/urls");
+  } else {
+    res.send("type in username");
+  }
 });
 
 // -------------------------------- Logout

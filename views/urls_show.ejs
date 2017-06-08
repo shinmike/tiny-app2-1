@@ -9,12 +9,8 @@
     </header>
     <h2>Full URL and its shortened form:</h2>
     <ul>
-      <li>
-        <strong>full url: </strong><%= longURL %>
-      </li>
-      <li>
-        <strong>shortened: </strong><%= shortURL %>
-      </li>
+      <li><strong>full url: </strong><%= longURL %></li>
+      <li><strong>shortened: </strong><%= shortURL %></li>
       <form action="/urls/<%= shortURL %>" method="POST">
         <input id="longURLUpdated" type="text" name="longURLUpdated" placeholder="http://" style="width: 300px">
         <input type="submit" value="Update">

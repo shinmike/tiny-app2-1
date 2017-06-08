@@ -1,22 +1,31 @@
 body {
-    background: #EFD469;
-    font-family: helvetica;
-    color: #fff;
-    padding: 30px;
+  /*background: #EFD469;*/
+  background: #DE6262;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #FFB88C, #DE6262);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #FFB88C, #DE6262); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  font-family: helvetica;
+  color: #fff;
+  padding: 30px;
 }
 
 h1 {
-    font-size: 48px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-align: center;
+  font-size: 48px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
 }
 
 p {
-    font-size: 16px;
-    text-align: center;
+  font-size: 16px;
+  text-align: center;
 }
 
 form {
-    display: inline;
+  display: inline;
+}
+
+div {
+  width:400px;
+  margin-right:auto;
+  margin-left:auto;
 }

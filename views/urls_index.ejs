@@ -10,9 +10,7 @@
     <h2>Shortened URLS:</h2>
     <ul>
       <% for (let key in urls) { %>
-        <li>
-          <strong><%= key %>: </strong><%= urls[key] %>
-        </li>
+        <li><strong><%= key %>: </strong><%= urls[key] %></li>
         <form action="/urls/<%= key %>/delete" method="POST">
           <input type="submit" value="Delete" class="btn btn-default">
         </form>
