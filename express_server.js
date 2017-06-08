@@ -125,28 +125,30 @@ app.post("/register", (req, res) => {
   const registrationUserId = generateRandomString();
 
 // ---------- Function - Validate email and password
-function validateEmailAndPassword(email, password){
-  return (password.length > 0 && email.includes('@'));
-}
+  function validateEmailAndPassword(email, password){
+    return (password.length > 0 && email.includes('@'));
+  }
 
 // ---------- Function - Validate unique email
-function validateUniqueEmail(email){
-  for (let key in users){
-    const user = users[key];
-    if (user && user.email === email){
-      return false;
+  function validateUniqueEmail(email){
+    for (let key in users){
+      const user = users[key];
+      if (user && user.email === email){
+        return false;
+      }
     }
+    return true;
   }
-  return true;
-}
 
-if (!validateEmailAndPassword(registrationEmail, registrationPassword)){
-  return res.status(400).send("Invalid email and/or password");
-}
+  if (!validateEmailAndPassword(registrationEmail, registrationPassword)){
+    res.status(400).send("Invalid email and/or password");
+    return;
+  }
 
-if (!validateUniqueEmail(registrationEmail)){
-  return res.status(400).send("This email has already been registered");
-}
+  if (!validateUniqueEmail(registrationEmail)){
+    res.status(400).send("This email has already been registered");
+    return;
+  }
   
 // ---------- add new user
   users[registrationUserId] = {
@@ -160,20 +162,28 @@ if (!validateUniqueEmail(registrationEmail)){
 });
 
 // -------------------------------- Login (set cookie)
+app.get("/login", (req,res) => {
+  res.render("login");
+});
+
 app.post("/login", (req, res) => {
-  if (req.body.username !== ""){
-// ---------- set cookie for username
-    res.cookie("username", req.body.username);
-    res.redirect("/urls");
-  } else {
-    res.send("type in username");
+  const loginEmail = req.body.email;
+  const loginPassword = req.body.password;
+  
+  for (let key in users){
+    const user = users[key];
+    if (user && user.email === loginEmail && user.password === loginPassword){
+      res.cookie("user_id", user.id);
+      res.redirect("/urls");
+      return;
+    }
   }
+  res.status(403).send("Bad credentials");
 });
 
 // -------------------------------- Logout
 app.post("/logout", (req, res) => {
-// ---------- clear cookie for username
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
