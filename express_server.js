@@ -30,9 +30,9 @@ const urlDatabase = {
 // -------------------------------------------------- Generate Random String
 function generateRandomString() {
   let text = "";
-  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const POSSIBLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 6; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
+    text += POSSIBLE.charAt(Math.floor(Math.random() * POSSIBLE.length));
   }
   return text;
 }
@@ -44,7 +44,7 @@ app.get("/", (req, res) => {
 
 // -------------------------------- Read database page
 app.get("/urls", (req, res) => {
-  let templateVars = {
+  const templateVars = {
     urls: urlDatabase,
     username: req.cookies.username
   };
@@ -53,21 +53,24 @@ app.get("/urls", (req, res) => {
 
 // -------------------------------- Create url to database
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
-  let longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
 // -------------------------------- Read new url page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new", { username: req.cookies.username });
+  const templateVars = {
+    username: req.cookies.username
+  };
+  res.render("urls_new", templateVars);
 });
 
 // -------------------------------- Read specific url page
 app.get("/urls/:id", (req, res) => {
   if (req.params.id in urlDatabase) {
-    let templateVars = {
+    const templateVars = {
       shortURL: req.params.id,
       longURL: urlDatabase[req.params.id],
       username: req.cookies.username
@@ -86,14 +89,14 @@ app.post("/urls/:id/delete", (req, res) => {
 
 // -------------------------------- Update specific url page
 app.post("/urls/:id", (req, res) => {
-  let longURLUpdated = req.body.longURLUpdated;
+  const longURLUpdated = req.body.longURLUpdated;
   urlDatabase[req.params.id] = longURLUpdated;
   res.redirect(`/urls/${req.params.id}`);
 });
 
 // -------------------------------- Read website of specific url page
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
