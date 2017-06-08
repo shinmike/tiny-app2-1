@@ -100,6 +100,17 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// -------------------------------- Register
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  res.redirect("/urls");
+});
+
 // -------------------------------- Login (set cookie)
 app.post("/login", (req, res) => {
   if (req.body.username !== ""){
