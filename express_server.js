@@ -75,10 +75,16 @@ app.post("/urls", (req, res) => {
 
 // -------------------------------- Read new url page
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies.user_id]
-  };
-  res.render("urls_new", templateVars);
+  for (let user in users){
+    if (users[req.cookies.user_id] === users[user]){
+      const templateVars = {
+        user: users[req.cookies.user_id]
+      };
+      res.render("urls_new", templateVars);
+      return;
+    }
+  }
+  res.redirect("/login");
 });
 
 // -------------------------------- Read specific url page
