@@ -22,9 +22,14 @@ app.use("/assets", express.static("assets")); // to apply CSS
 
 // -------------------------------------------------- Database
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  "2kjg7L": "http://www.tsn.ca"
+  "b2xVn2": {
+    userId: "userRandomID",
+    longURL: "http://www.lighthouselabs.ca",
+  },
+  "9sm5xK": {
+    userId: "user2RandomID",
+    longURL: "http://www.google.com",
+  }
 };
 
 // -------------------------------------------------- Users
