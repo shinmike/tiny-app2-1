@@ -122,14 +122,23 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const user = generateRandomString();
+// ----- add new user
+  users[user] = {
+    id: user,
+    email: email,
+    password: password
+  }
+// ----- set cookie for new user
+  res.cookie("user_id", user);
   res.redirect("/urls");
 });
 
 // -------------------------------- Login (set cookie)
 app.post("/login", (req, res) => {
   if (req.body.username !== ""){
+// ----- set cookie for username
     res.cookie("username", req.body.username);
-    console.log("cookie 'username' set!");
     res.redirect("/urls");
   } else {
     res.send("type in username");
@@ -138,8 +147,8 @@ app.post("/login", (req, res) => {
 
 // -------------------------------- Logout
 app.post("/logout", (req, res) => {
+// ----- clear cookie for username
   res.clearCookie("username");
-  console.log("cookie 'username' cleared!");
   res.redirect("/urls");
 });
 
