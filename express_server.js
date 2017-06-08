@@ -120,17 +120,42 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const user = generateRandomString();
+  const registrationEmail = req.body.email;
+  const registrationPassword = req.body.password;
+  const registrationUserId = generateRandomString();
+
+// ---------- Function - Validate email and password
+function validateEmailAndPassword(email, password) {
+  return (password.length > 0 && email.includes('@'));
+}
+
+// ---------- Function - Validate unique email
+function validateUniqueEmail(email){
+  for (let key in users){
+    const user = users[key];
+    if (user && user.email === email){
+      return false;
+    }
+  }
+  return true;
+}
+
+if (!validateEmailAndPassword(registrationEmail, registrationPassword)){
+  return res.status(400).send("Invalid email and/or password");
+}
+
+if (!validateUniqueEmail(registrationEmail)){
+  return res.status(400).send("This email has already been registered");
+}
+  
 // ----- add new user
-  users[user] = {
-    id: user,
-    email: email,
-    password: password
+  users[registrationUserId] = {
+    id: registrationUserId,
+    email: registrationEmail,
+    password: registrationPassword
   }
 // ----- set cookie for new user
-  res.cookie("user_id", user);
+  res.cookie("user_id", registrationUserId);
   res.redirect("/urls");
 });
 
