@@ -60,7 +60,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies.username
+    user: users[req.cookies.user_id]
   };
   res.render("urls_index", templateVars);
 });
@@ -76,7 +76,7 @@ app.post("/urls", (req, res) => {
 // -------------------------------- Read new url page
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies.username
+    user: users[req.cookies.user_id]
   };
   res.render("urls_new", templateVars);
 });
@@ -87,7 +87,7 @@ app.get("/urls/:id", (req, res) => {
     const templateVars = {
       shortURL: req.params.id,
       longURL: urlDatabase[req.params.id],
-      username: req.cookies.username
+      user: users[req.cookies.user_id]
     };
     res.render("urls_show", templateVars);
   } else {
@@ -125,7 +125,7 @@ app.post("/register", (req, res) => {
   const registrationUserId = generateRandomString();
 
 // ---------- Function - Validate email and password
-function validateEmailAndPassword(email, password) {
+function validateEmailAndPassword(email, password){
   return (password.length > 0 && email.includes('@'));
 }
 
@@ -148,13 +148,13 @@ if (!validateUniqueEmail(registrationEmail)){
   return res.status(400).send("This email has already been registered");
 }
   
-// ----- add new user
+// ---------- add new user
   users[registrationUserId] = {
     id: registrationUserId,
     email: registrationEmail,
     password: registrationPassword
   }
-// ----- set cookie for new user
+// ---------- set cookie for new user
   res.cookie("user_id", registrationUserId);
   res.redirect("/urls");
 });
@@ -162,7 +162,7 @@ if (!validateUniqueEmail(registrationEmail)){
 // -------------------------------- Login (set cookie)
 app.post("/login", (req, res) => {
   if (req.body.username !== ""){
-// ----- set cookie for username
+// ---------- set cookie for username
     res.cookie("username", req.body.username);
     res.redirect("/urls");
   } else {
@@ -172,7 +172,7 @@ app.post("/login", (req, res) => {
 
 // -------------------------------- Logout
 app.post("/logout", (req, res) => {
-// ----- clear cookie for username
+// ---------- clear cookie for username
   res.clearCookie("username");
   res.redirect("/urls");
 });
