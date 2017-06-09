@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <h1>Emi.ly</h1>
 <% if (user) {%>
-  <h2>Hello, <%= user.id %></h2>
+  <h2>Hello, <%= user.email %></h2>
   <form action="/logout" method="POST">
     <input type="submit" value="Logout">
   </form>

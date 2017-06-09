@@ -63,7 +63,7 @@ function generateRandomString() {
 
 // -------------------------------------------------- Routes
 app.get("/", (req, res) => {
-  res.redirect("/login");
+  res.render("landing-page");
 });
 
 // -------------------------------- Read database page
@@ -76,7 +76,7 @@ app.get("/urls", (req, res) => {
     res.render("urls_index", templateVars);
     return;
   } else {
-    res.send("login or register first"); // need to render a page for this with links to login and register
+    res.status(401).render("./errors/401");
   }  
 });
 
@@ -108,15 +108,19 @@ app.get("/urls/new", (req, res) => {
 
 // -------------------------------- Read specific url page
 app.get("/urls/:id", (req, res) => {
-  if (req.params.id in urlDatabase) {
-    const templateVars = {
-      shortURL: req.params.id,
-      longURL: urlDatabase[req.params.id].longURL,
-      user: users[req.session.user_id]
-    };
-    res.render("urls_show", templateVars);
+  if (req.session.user_id) {
+    if (req.params.id in urlDatabase) {
+      const templateVars = {
+        shortURL: req.params.id,
+        longURL: urlDatabase[req.params.id].longURL,
+        user: users[req.session.user_id]
+      };
+      res.render("urls_show", templateVars);
+    } else {
+      res.status(404).render("./errors/404");
+    }
   } else {
-    res.render("urls_new");
+    res.status(403).render("./errors/403");
   }
 });
 
@@ -140,9 +144,7 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL);
     return;
   } else {
-    res.status(400).send(`invalid url...<br>
-    go to: <a href="/login">Login</a> or <br>
-    go to <a href="/register">Register</a>`);
+    res.status(404).render("./errors/404");
   }
 });
 

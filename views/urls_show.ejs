@@ -7,10 +7,9 @@
     <header>
       <% include ./partials/_header %>
     </header>
-    <h2>Full URL and its shortened form:</h2>
+    <h2><strong>Shortened: </strong><a href="/u/<%= shortURL %>"><%= shortURL %></a></h2>
     <ul>
-      <li><strong>full url: </strong><%= longURL %></li>
-      <li><strong>shortened: </strong><%= shortURL %></li>
+      <li><strong>Full url: </strong><%= longURL %></li>
       <form action="/urls/<%= shortURL %>" method="POST">
         <input id="longURLUpdated" type="text" name="longURLUpdated" placeholder="http://" style="width: 300px">
         <input type="submit" value="Update">
