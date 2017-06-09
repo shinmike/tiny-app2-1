@@ -63,11 +63,16 @@ app.get("/", (req, res) => {
 
 // -------------------------------- Read database page
 app.get("/urls", (req, res) => {
-  const templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies.user_id]
-  };
-  res.render("urls_index", templateVars);
+  if (req.cookies.user_id){
+    const templateVars = {
+      urls: urlDatabase,
+      user: users[req.cookies.user_id]
+    };
+    res.render("urls_index", templateVars);
+    return;
+  } else {
+    res.send("login or register first");
+  }  
 });
 
 // -------------------------------- Create url to database
