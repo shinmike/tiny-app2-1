@@ -2,7 +2,8 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
 const app = express();
@@ -16,9 +17,12 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-
-app.use(cookieParser());
-
+// app.use(cookieParser());
+app.use(cookieSession({
+  name: "session",
+  keys: "blah blah blah",
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 app.use("/assets", express.static("assets")); // to apply CSS
 
 // -------------------------------------------------- Database
@@ -64,10 +68,10 @@ app.get("/", (req, res) => {
 
 // -------------------------------- Read database page
 app.get("/urls", (req, res) => {
-  if (req.cookies.user_id){
+  if (req.session.user_id) {
     const templateVars = {
       urls: urlDatabase,
-      user: users[req.cookies.user_id]
+      user: users[req.session.user_id]
     };
     res.render("urls_index", templateVars);
     return;
@@ -81,7 +85,7 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   const urlTemplate = {
-    userId: users[req.cookies.user_id].id,
+    userId: users[req.session.user_id].id,
     longURL: longURL
   }
   urlDatabase[shortURL] = urlTemplate;
@@ -91,9 +95,9 @@ app.post("/urls", (req, res) => {
 // -------------------------------- Read new url page
 app.get("/urls/new", (req, res) => {
   for (let key in users){
-    if (users[req.cookies.user_id] === users[key]){
+    if (users[req.session.user_id] === users[key]){
       const templateVars = {
-        user: users[req.cookies.user_id]
+        user: users[req.session.user_id]
       };
       res.render("urls_new", templateVars);
       return;
@@ -108,7 +112,7 @@ app.get("/urls/:id", (req, res) => {
     const templateVars = {
       shortURL: req.params.id,
       longURL: urlDatabase[req.params.id].longURL,
-      user: users[req.cookies.user_id]
+      user: users[req.session.user_id]
     };
     res.render("urls_show", templateVars);
   } else {
@@ -187,7 +191,8 @@ app.post("/register", (req, res) => {
   }
 
 // ---------- set cookie for new user
-  res.cookie("user_id", registrationUserId);
+  // res.cookie("user_id", registrationUserId);
+  req.session.user_id = registrationUserId;
   res.redirect("/urls");
 });
 
@@ -203,7 +208,8 @@ app.post("/login", (req, res) => {
   for (let key in users){
     const user = users[key];
     if (user && user.email === loginEmail && bcrypt.compareSync(loginPassword, user.password)){
-      res.cookie("user_id", user.id);
+      // res.cookie("user_id", user.id);
+      req.session.user_id = user.id;
       res.redirect("/urls");
       return;
     }
@@ -213,7 +219,7 @@ app.post("/login", (req, res) => {
 
 // -------------------------------- Logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   console.log("Logout successful");
   res.redirect("/");
 });
