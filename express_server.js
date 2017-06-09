@@ -58,7 +58,7 @@ function generateRandomString() {
 
 // -------------------------------------------------- Routes
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // -------------------------------- Read database page
@@ -74,14 +74,18 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  const urlTemplate = {
+    userId: users[req.cookies.user_id].id,
+    longURL: longURL
+  }
+  urlDatabase[shortURL] = urlTemplate;
   res.redirect(`/urls/${shortURL}`);
 });
 
 // -------------------------------- Read new url page
 app.get("/urls/new", (req, res) => {
-  for (let user in users){
-    if (users[req.cookies.user_id] === users[user]){
+  for (let key in users){
+    if (users[req.cookies.user_id] === users[key]){
       const templateVars = {
         user: users[req.cookies.user_id]
       };
@@ -97,7 +101,7 @@ app.get("/urls/:id", (req, res) => {
   if (req.params.id in urlDatabase) {
     const templateVars = {
       shortURL: req.params.id,
-      longURL: urlDatabase[req.params.id],
+      longURL: urlDatabase[req.params.id].longURL,
       user: users[req.cookies.user_id]
     };
     res.render("urls_show", templateVars);
@@ -115,13 +119,13 @@ app.post("/urls/:id/delete", (req, res) => {
 // -------------------------------- Update specific url page
 app.post("/urls/:id", (req, res) => {
   const longURLUpdated = req.body.longURLUpdated;
-  urlDatabase[req.params.id] = longURLUpdated;
+  urlDatabase[req.params.id].longURL = longURLUpdated;
   res.redirect(`/urls/${req.params.id}`);
 });
 
 // -------------------------------- Read website of specific url page
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -195,7 +199,7 @@ app.post("/login", (req, res) => {
 // -------------------------------- Logout
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/");
 });
 
 // -------------------------------- Read JSON of database
