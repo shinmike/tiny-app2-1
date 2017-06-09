@@ -125,16 +125,26 @@ app.get("/urls/:id", (req, res) => {
 });
 
 // -------------------------------- Delete specific url page
+app.get("/urls/:id/delete", (req, res) => {
+  if (!req.session.user_id) {
+    res.status(403).render("./errors/403");
+  }
+});
+
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect("/urls");
+  if (req.session.user_id) {
+    delete urlDatabase[req.params.id];
+    res.redirect("/urls");
+  } else {
+    res.status(403).render("./errors/403");
+  }
 });
 
 // -------------------------------- Update specific url page
 app.post("/urls/:id", (req, res) => {
   const longURLUpdated = req.body.longURLUpdated;
   urlDatabase[req.params.id].longURL = longURLUpdated;
-  res.redirect(`/urls/${req.params.id}`);
+  res.redirect("/urls");
 });
 
 // -------------------------------- Read website of specific url page
@@ -150,7 +160,11 @@ app.get("/u/:shortURL", (req, res) => {
 
 // -------------------------------- Register
 app.get("/register", (req, res) => {
-  res.render("register");
+  if (req.session.user_id){
+    res.redirect("/urls");
+  } else {
+    res.render("register");
+  }
 });
 
 app.post("/register", (req, res) => {
@@ -176,12 +190,12 @@ app.post("/register", (req, res) => {
   }
 
   if (!validateEmailAndPassword(registrationEmail, hashed_password)){
-    res.status(400).send("Invalid email and/or password");
+    res.status(400).render("./errors/400-invalid");
     return;
   }
 
   if (!validateUniqueEmail(registrationEmail)){
-    res.status(400).send("This email has already been registered");
+    res.status(400).render("./errors/400-registered");
     return;
   }
   
@@ -200,7 +214,11 @@ app.post("/register", (req, res) => {
 
 // -------------------------------- Login (set cookie)
 app.get("/login", (req,res) => {
-  res.render("login");
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.render("login");
+  }
 });
 
 app.post("/login", (req, res) => {
@@ -216,7 +234,7 @@ app.post("/login", (req, res) => {
       return;
     }
   }
-  res.status(403).send("Bad credentials");
+  res.status(401).render("./errors/401");
 });
 
 // -------------------------------- Logout
