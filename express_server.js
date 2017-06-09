@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -149,6 +150,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const registrationEmail = req.body.email;
   const registrationPassword = req.body.password;
+  const hashed_password = bcrypt.hashSync(registrationPassword, 10);
   const registrationUserId = generateRandomString();
 
 // ---------- Function - Validate email and password
@@ -167,7 +169,7 @@ app.post("/register", (req, res) => {
     return true;
   }
 
-  if (!validateEmailAndPassword(registrationEmail, registrationPassword)){
+  if (!validateEmailAndPassword(registrationEmail, hashed_password)){
     res.status(400).send("Invalid email and/or password");
     return;
   }
@@ -181,8 +183,9 @@ app.post("/register", (req, res) => {
   users[registrationUserId] = {
     id: registrationUserId,
     email: registrationEmail,
-    password: registrationPassword
+    password: hashed_password
   }
+
 // ---------- set cookie for new user
   res.cookie("user_id", registrationUserId);
   res.redirect("/urls");
@@ -199,7 +202,7 @@ app.post("/login", (req, res) => {
   
   for (let key in users){
     const user = users[key];
-    if (user && user.email === loginEmail && user.password === loginPassword){
+    if (user && user.email === loginEmail && bcrypt.compareSync(loginPassword, user.password)){
       res.cookie("user_id", user.id);
       res.redirect("/urls");
       return;
@@ -211,6 +214,7 @@ app.post("/login", (req, res) => {
 // -------------------------------- Logout
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
+  console.log("Logout successful");
   res.redirect("/");
 });
 
