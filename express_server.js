@@ -71,7 +71,7 @@ app.get("/urls", (req, res) => {
     res.render("urls_index", templateVars);
     return;
   } else {
-    res.send("login or register first");
+    res.send("login or register first"); // need to render a page for this with links to login and register
   }  
 });
 
@@ -130,8 +130,15 @@ app.post("/urls/:id", (req, res) => {
 
 // -------------------------------- Read website of specific url page
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  if (req.params.shortURL in urlDatabase){
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+    return;
+  } else {
+    res.status(400).send(`invalid url...<br>
+    go to: <a href="/login">Login</a> or <br>
+    go to <a href="/register">Register</a>`);
+  }
 });
 
 // -------------------------------- Register
