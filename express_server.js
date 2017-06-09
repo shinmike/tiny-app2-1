@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({
 // app.use(cookieParser());
 app.use(cookieSession({
   name: "session",
-  keys: "blah blah blah",
+  keys: ["blah blah blah"],
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 app.use("/assets", express.static("assets")); // to apply CSS
