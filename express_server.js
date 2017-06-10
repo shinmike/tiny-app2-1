@@ -61,12 +61,18 @@ function generateRandomString() {
 
 // -------------------------------------------------- Routes
 app.get("/", (req, res) => {
+  // if (req.session.user_id){
+  //   res.redirect('/urls');
+  // } else {
+  //   res.redirect('/login');
+  // }
+  // --- uncomment code above to follow tech specs
   res.render("landing-page");
 });
 
 // -------------------------------- Read database page
 app.get("/urls", (req, res) => {
-  if (req.session.user_id) {
+  if (req.session.user_id){
     const templateVars = {
       urls: urlDatabase,
       user: users[req.session.user_id]
