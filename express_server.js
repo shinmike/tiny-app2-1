@@ -2,13 +2,12 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
-// const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
 const app = express();
 
-const PORT = process.env.PORT || 8080; // default port 8080
+const PORT = process.env.PORT || 8080; 
 
 // -------------------------------------------------- Configuration
 app.set("view engine", "ejs");
@@ -17,38 +16,37 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-// app.use(cookieParser());
 app.use(cookieSession({
   name: "session",
   keys: ["blah blah blah"],
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
-app.use("/assets", express.static("assets")); // to apply CSS
+app.use("/assets", express.static("assets")); 
 
 // -------------------------------------------------- Database
 const urlDatabase = {
-  "b2xVn2": {
-    userId: "userRandomID",
-    longURL: "http://www.lighthouselabs.ca",
-  },
-  "9sm5xK": {
-    userId: "user2RandomID",
-    longURL: "http://www.google.com",
-  }
+  // "b2xVn2": {
+  //   userId: "userRandomID",
+  //   longURL: "http://www.lighthouselabs.ca",
+  // },
+  // "9sm5xK": {
+  //   userId: "user2RandomID",
+  //   longURL: "http://www.google.com",
+  // }
 };
 
 // -------------------------------------------------- Users
 const users = { 
-  "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
-    password: "dishwasher-funk"
-  }
+//   "userRandomID": {
+//     id: "userRandomID", 
+//     email: "user@example.com", 
+//     password: "purple-monkey-dinosaur"
+//   },
+//  "user2RandomID": {
+//     id: "user2RandomID", 
+//     email: "user2@example.com", 
+//     password: "dishwasher-funk"
+//   }
 }
 
 // -------------------------------------------------- Generate Random String
@@ -74,7 +72,6 @@ app.get("/urls", (req, res) => {
       user: users[req.session.user_id]
     };
     res.render("urls_index", templateVars);
-    return;
   } else {
     res.status(401).render("./errors/401");
   }  
@@ -85,23 +82,21 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   const urlTemplate = {
-    userId: users[req.session.user_id].id,
+    userId: req.session.user_id,
     longURL: longURL
-  }
+  };
   urlDatabase[shortURL] = urlTemplate;
   res.redirect(`/urls/${shortURL}`);
 });
 
 // -------------------------------- Read new url page
 app.get("/urls/new", (req, res) => {
-  for (let key in users){
-    if (users[req.session.user_id] === users[key]){
-      const templateVars = {
-        user: users[req.session.user_id]
-      };
-      res.render("urls_new", templateVars);
-      return;
-    }
+  if (req.session.user_id){
+    const templateVars = {
+      user: users[req.session.user_id]
+    };
+    res.render("urls_new", templateVars);
+    return;
   }
   res.redirect("/login");
 });
@@ -125,26 +120,24 @@ app.get("/urls/:id", (req, res) => {
 });
 
 // -------------------------------- Delete specific url page
-app.get("/urls/:id/delete", (req, res) => {
-  if (!req.session.user_id) {
-    res.status(403).render("./errors/403");
-  }
-});
-
 app.post("/urls/:id/delete", (req, res) => {
   if (req.session.user_id) {
     delete urlDatabase[req.params.id];
     res.redirect("/urls");
   } else {
-    res.status(403).render("./errors/403");
+    res.status(403).render("./errors/403"); // need another condition? asking for get delete route...
   }
 });
 
 // -------------------------------- Update specific url page
 app.post("/urls/:id", (req, res) => {
-  const longURLUpdated = req.body.longURLUpdated;
-  urlDatabase[req.params.id].longURL = longURLUpdated;
-  res.redirect("/urls");
+  if (req.session.user_id) {
+    const longURLUpdated = req.body.longURLUpdated;
+    urlDatabase[req.params.id].longURL = longURLUpdated;
+    res.redirect("/urls");
+  } else {
+    res.status(403).render("./errors/403");
+  }
 });
 
 // -------------------------------- Read website of specific url page
@@ -152,7 +145,6 @@ app.get("/u/:shortURL", (req, res) => {
   if (req.params.shortURL in urlDatabase){
     const longURL = urlDatabase[req.params.shortURL].longURL;
     res.redirect(longURL);
-    return;
   } else {
     res.status(404).render("./errors/404");
   }
@@ -207,7 +199,6 @@ app.post("/register", (req, res) => {
   }
 
 // ---------- set cookie for new user
-  // res.cookie("user_id", registrationUserId);
   req.session.user_id = registrationUserId;
   res.redirect("/urls");
 });
@@ -228,7 +219,6 @@ app.post("/login", (req, res) => {
   for (let key in users){
     const user = users[key];
     if (user && user.email === loginEmail && bcrypt.compareSync(loginPassword, user.password)){
-      // res.cookie("user_id", user.id);
       req.session.user_id = user.id;
       res.redirect("/urls");
       return;
@@ -242,11 +232,6 @@ app.post("/logout", (req, res) => {
   req.session = null;
   console.log("Logout successful");
   res.redirect("/");
-});
-
-// -------------------------------- Read JSON of database
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
 });
 
 // -------------------------------------------------- Initialize app
